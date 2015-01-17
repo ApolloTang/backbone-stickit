@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>01.01 w underscore template</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style media="screen" type="text/css">
+
+    /* css here */
+
+    </style>
+</head>
+<body>
+
+    <script id="template" type="text/x-underscore-template">
+        <h1 id="title"/> <input id="author" type="text">
+        <p><%= data %></p>
+    </script>
+
+    <div id="region"></div>
+
+    <script src="../vendors/jquery-1.11.0.js"></script>
+    <script src="../vendors/underscore-1.6.0.js"></script>
+    <script src="../vendors/backbone-1.1.2.js"></script>
+    <script src="../vendors/backbone.stickit-0.8.0.js"></script>
+
+
+    <script>
+    /* global $, Backbone, _ */
+    (function(){
+        'use strict';
+
+        var app = {};
+
+        app.template = $('#template').html();
+
+        app.data = {
+              title: 'title'
+            , authorName: 'apollo'
+            , someText: 'some text a b c'
+        };
+        app.V = Backbone.View.extend({
+              tagName: 'div'
+            , template: _.template( app.template )
+            , bindings: {
+                '#title': 'title',
+                '#author': 'authorName'
+            }
+            , render: function() {
+                var data = this.model.get('someText');
+                var htmlToRender = this.template({data:data});
+                this.$el.html(htmlToRender);
+                this.stickit();
+                return this;
+            }
+        });
+        app.v = new app.V({
+            model: new ( Backbone.Model.extend() )(app.data)
+        });
+
+        $('#region').append(app.v.render().$el);
+
+        window.v = app.v;
+
+    })();
+
+    // v.model.toJSON()
+    // v.model.set({ title:'title changed', someText: 'new text'})
+
+    </script>
+</body>
+</html>
