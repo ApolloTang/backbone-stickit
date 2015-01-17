@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>01.03 w marionette handlebars</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style media="screen" type="text/css">
+
+    /* css here */
+
+    </style>
+</head>
+<body>
+
+    <script id="template" type="text/x-underscore-template">
+        <h1 id="title"/> <input id="author" type="text">
+        <p>{{data}}</p>
+    </script>
+
+    <div id="region"></div>
+
+    <script src="../vendors/backbone.marionette/jquery.js"></script>
+    <script src="../vendors/backbone.marionette/underscore.js"></script>
+    <script src="../vendors/backbone.marionette/backbone.js"></script>
+    <script src="../vendors/backbone.marionette/backbone.marionette.js"></script>
+
+    <script src="../vendors/backbone.stickit-0.8.0.js"></script>
+    <script src="../vendors/handlebars-v2.0.0.js"></script>
+
+    <script>
+    /* global $, Backbone, _, Handlebars */
+    (function(){
+        'use strict';
+
+        var app = {};
+
+        app.template = $('#template').html();
+
+        app.data = {
+              title: 'title'
+            , authorName: 'apollo'
+            , someText: 'some text a b c'
+        };
+
+        // Create a stickit marionette itemView
+        // Ref:
+        // http://stackoverflow.com/questions/23062404/best-practice-for-changing-the-model-of-a-marionette-itemview
+        app.StickitItemView = Backbone.Marionette.ItemView.extend({
+              bindings: {}
+            , render: function(){
+                // Invoke original render function
+                var result = Marionette.ItemView.prototype.render.apply(this, [].slice.apply(arguments));
+                // Apply stickit
+                this.stickit();
+                // Return render result
+                return result;
+            }
+        });
+
+        app.V = app.StickitItemView.extend({
+              tagName: 'div'
+            , template: Handlebars.compile( app.template )
+            , bindings: {
+                '#title': 'title',
+                '#author': 'authorName'
+            }
+            , serializeData: function(){
+                var data = this.model.toJSON().someText;
+                return {data:data};
+            }
+        });
+
+        app.v = new app.V({
+            model: new ( Backbone.Model.extend() )(app.data)
+        });
+
+        $('#region').append(app.v.render().$el);
+
+        window.v = app.v;
+
+    })();
+
+    // v.model.toJSON()
+    // v.model.set({ title:'title changed', someText: 'new text'})
+
+    </script>
+</body>
+</html>
